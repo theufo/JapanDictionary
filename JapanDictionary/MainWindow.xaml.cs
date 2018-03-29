@@ -33,9 +33,9 @@ namespace JapanDictionary
             {
                 var resultHtml = await apiHelper.GetAsync(link);
 
-                var response = new Response(resultHtml);
+                var htmlParser = new HtmlParser(resultHtml);
 
-                DictionaryView.OutPutText.Text = response.HtmlBody.OuterHtml;
+                DictionaryView.OutPutText.Text = htmlParser.Parse();
             }
             catch (Exception e)
             {
@@ -44,19 +44,36 @@ namespace JapanDictionary
         }
     }
 
-    public class Response
+    public class TranslateObject
     {
-        public HtmlNode HtmlBody;
-        public string OriginalWord;
+        public int id;
+        public string OriginalString;
         public string Pronunciation;
         public List<string> Translation;
 
-        public Response(string resultHtml)
+        public TranslateObject()
         {
-            var htmlDoc = new HtmlDocument();
-            htmlDoc.LoadHtml(resultHtml);
+            Translation = new List<string>();
+        }
+    }
 
-            HtmlBody = htmlDoc.GetElementbyId("tabContent");
+    public class TranslateObjectComparer : IEqualityComparer<TranslateObject>
+    {
+        public bool Equals(TranslateObject x, TranslateObject y)
+        {
+            if (x.id == null || y.id == null)
+                return false;
+
+            return x.id == y.id;
+        }
+
+        public int GetHashCode(TranslateObject obj)
+        {
+            if (Object.ReferenceEquals(obj, null)) return 0;
+
+            int hashOriginalString = obj.OriginalString == null ? 0 : obj.OriginalString.GetHashCode();
+
+            return hashOriginalString;
         }
     }
 }
