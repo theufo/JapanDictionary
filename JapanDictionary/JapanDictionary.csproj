@@ -134,6 +134,7 @@
     <Compile Include="TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="TranslateObject.cs" />
     <Page Include="DictionaryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
