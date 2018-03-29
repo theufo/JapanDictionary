@@ -24,7 +24,7 @@ namespace JapanDictionary
             _httpClient.Timeout = TimeSpan.FromSeconds(300);
         }
 
-        public async Task<String> GetAsync<T>(string url)
+        public async Task<String> GetAsync(string url)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _httpClient.SendAsync(httpRequestMessage);

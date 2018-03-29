@@ -130,6 +130,7 @@
     <Compile Include="DictionaryView.xaml.cs">
       <DependentUpon>DictionaryView.xaml</DependentUpon>
     </Compile>
+    <Compile Include="HtmlParser.cs" />
     <Compile Include="TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
     </Compile>
