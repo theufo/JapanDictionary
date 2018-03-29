@@ -21,7 +21,7 @@ namespace JapanDictionary
             TranslateObjects = new List<TranslateObject>();
         }
 
-        public string Parse()
+        public List<TranslateObject> Parse()
         {
             string result = "";
 
@@ -97,17 +97,7 @@ namespace JapanDictionary
                     Console.WriteLine(e);
                 }
 
-                foreach (var translateObject in TranslateObjects)
-                {
-                    result += translateObject.OriginalString + "\n";
-                    result += translateObject.Pronunciation + "\n";
-                    for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
-                    {
-                        result += (i + 1) + ") " + translateObject.Translation[i] + "\n";
-                    }
-                    result += "\n";
-                }
-                return result;
+                return TranslateObjects;
             }
         }
     }

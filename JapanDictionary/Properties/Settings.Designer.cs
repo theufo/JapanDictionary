@@ -31,5 +31,23 @@ namespace JapanDictionary.Properties {
                 return ((int)(this["MaxTranslations"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("4e00")]
+        public string KanjiStartValue {
+            get {
+                return ((string)(this["KanjiStartValue"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("9faf")]
+        public string KanjiEndValue {
+            get {
+                return ((string)(this["KanjiEndValue"]));
+            }
+        }
     }
 }
