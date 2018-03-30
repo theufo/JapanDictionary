@@ -25,12 +25,13 @@ namespace JapanDictionary
 
         private void TranslateFile(object sender, RoutedEventArgs e)
         {
-            //GetTranslation();
             ParseForKanji();
         }
 
         private async void ParseForKanji()
         {
+            DictionaryResult = new List<TranslateObject>();
+
             var charArray = TextView.InputText.Text.ToCharArray();
             string newText = ""; 
             List<string> kanjiList = new List<string>();
@@ -64,8 +65,6 @@ namespace JapanDictionary
                     isPreviousKanji = false;
             }
 
-
-
             //var output = string.Empty;
 
             //foreach (var kanji in kanjiList)
@@ -81,6 +80,7 @@ namespace JapanDictionary
             }
 
             TextView.InputText.Text = newText;
+
             DictionaryView.OutPutText.Text = OutputTranslation();
         }
 
@@ -92,13 +92,13 @@ namespace JapanDictionary
             foreach (var translateObject in DictionaryResult)
             {
                 //TODO result += "(" + translateObject.id + ")" + "\n";
-                result += "(" + number + ")" + "\n";
+                result += "-----------------------(" + number + ")-----------------------" + "\n";
                 number++;
                 result += translateObject.OriginalString + "\n";
-                result += translateObject.Pronunciation + "\n";
+                //result += translateObject.Pronunciation + "\n";
                 for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
                 {
-                    result += (i + 1) + ") " + translateObject.Translation[i] + "\n";
+                    result += (i + 1) + ") " + translateObject.Translation[i].Key + "\n" + translateObject.Translation[i].Value + "\n";
                 }
                 result += "\n";
             }
@@ -109,8 +109,7 @@ namespace JapanDictionary
         {
             ApiHelper apiHelper = new ApiHelper();
             var result = new List<TranslateObject>();
-            var link = "http://www.jardic.ru/search/search_r.php?q=" +
-                       kanjiItem + "&pg=0&dic_jardic=1&dic_warodai=1&dic_unihan=1&dic_edict=1&dic_enamdict=1&dic_kanjidic=1&dic_tatoeba=1&dic_chekhov=1&dic_japaneselaw=1&dic_medic=1&sw=1920"; //TODO to checkboxes
+            var link = "http://www.jardic.ru/search/search_r.php?q=" + kanjiItem + "&pg=0&dic_jardic=" + Settings.Default.Jardic + "&dic_warodai=" + Settings.Default.Warodai + " & sw=1920"; //TODO to checkboxes
             Thread.Sleep(100);
             try
             {

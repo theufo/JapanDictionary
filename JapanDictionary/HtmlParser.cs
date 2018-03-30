@@ -21,6 +21,14 @@ namespace JapanDictionary
             TranslateObjects = new List<TranslateObject>();
         }
 
+        public bool CheckForAttributes(HtmlNode node)
+        {
+            if (node.HasAttributes)
+                if (node.Attributes[0].Value == "background-color: #DDDDDD; ")
+                    return true;
+            return false;
+        }
+
         public List<TranslateObject> Parse()
         {
             string result = "";
@@ -34,70 +42,65 @@ namespace JapanDictionary
 
                 foreach (var node in trCollection)
                 {
-                    if (node.Id.Contains("pos")) //getting tr tag with pos
+                    if (node.Id.Contains("pos") || CheckForAttributes(node)) //getting tr tag with pos
                     {
                         var translateObject = new TranslateObject();
-                        translateObject.id = Int32.Parse(node.Id.Substring(3));
+                        //translateObject.id = Int32.Parse(node.Id.Substring(3)); //TODO FIXME
                         var translateObjectComparer = new TranslateObjectComparer();
 
-                        var copy = false;
+                        var isSameKanji = false;
 
                         if (TranslateObjects.Contains(translateObject, translateObjectComparer))
                         {
                             translateObject = TranslateObjects.First(x => x.id == translateObject.id);
-                            copy = true;
+                            isSameKanji = true;
                         }
 
                         HtmlNode headerNode = null;
                         if (translateObject.OriginalString == null)
                             headerNode = node.SelectSingleNode(node.XPath + "//span");
                         if (headerNode != null)
-                        translateObject.OriginalString = node.SelectSingleNode(node.XPath + "//span").InnerText; //selecting first span for getting header hieroglyph if there are more than one
+                            translateObject.OriginalString = node.SelectSingleNode(node.XPath + "//span").InnerText; //selecting first span for getting header hieroglyph if there are more than one
                         else
-                        translateObject.OriginalString = node.InnerText;
+                            translateObject.OriginalString = node.InnerText;
 
-                        if (!copy)
+                        if (!isSameKanji)
                             TranslateObjects.Add(translateObject);
                     }
                     if (!node.HasAttributes) //getting <tr> tag without pos thus this <tr> is part of previous one
                     {
                         var num = TranslateObjects.Count - 1;
                         if (num >= 0)
-                        {
-                            var spans = node.SelectNodes(node.XPath + "//span"); //getting all <span>'s
-                            foreach (var span in spans)
+                            if (TranslateObjects[num].Translation.Count <= Settings.Default.MaxTranslations)
                             {
-                                if (span.Attributes[0].Value.ToLower() == "color: #7f0000;") //selecting specific spans based on style color
-                                    TranslateObjects[num].Pronunciation = span.InnerText;
-                                if (span.Attributes[0].Value == "color: #000000;")
-                                {
-                                    //var separator = "<br>";
-                                    //List<string> list;
-                                    //if (span.InnerHtml.Contains(separator))
-                                    //{
-                                    //    list = span.InnerHtml.Split(new string[] {separator}, StringSplitOptions.RemoveEmptyEntries).ToList();
-                                    //    foreach (var item in list)
-                                    //    {
-                                    //        HtmlDocument htmlDocument = new HtmlDocument();
-                                    //        htmlDocument.LoadHtml(item);
-                                    //        item = htmlDoc.DocumentNode.InnerText;
-                                    //    }
-                                    //    else
-                                        //list = span.InnerText.Split(new string[] {separator}, StringSplitOptions.RemoveEmptyEntries).ToList();
-                                        //TranslateObjects[num].Translation.AddRange(list);
-                                        TranslateObjects[num].Translation.Add(span.InnerText);
+                                var spans = node.SelectNodes(node.XPath + "//span"); //getting all <span>'s
+
+                                KeyValuePair<string, string> keyValuePair;
+
+                                string pronunciation = string.Empty;
+                                string translation = string.Empty;
+
+                                if (spans != null)
+                                    foreach (var span in spans) //selecting specific spans based on style color
+                                    {
+                                        if (span.Attributes[0].Value.ToLower() == "color: #7f0000;") //pronunciation span
+                                            pronunciation = span.InnerText;
+                                        if (span.Attributes[0].Value == "color: #000000;") //translation span
+                                        {
+                                            translation = span.InnerText;
+                                        }
                                     }
-                                }
+                                keyValuePair = new KeyValuePair<string, string>(pronunciation, translation);
+                                TranslateObjects[num].Translation.Add(keyValuePair);
                             }
-                        }
                     }
                 }
-                catch (Exception e)
-                {
-                    Console.WriteLine(e);
-                }
-
-                return TranslateObjects;
             }
+            catch (Exception e)
+            {
+                Console.WriteLine(e);
+            }
+            return TranslateObjects;
         }
     }
+}

@@ -49,5 +49,23 @@ namespace JapanDictionary.Properties {
                 return ((string)(this["KanjiEndValue"]));
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int Jardic {
+            get {
+                return ((int)(this["Jardic"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1")]
+        public int Warodai {
+            get {
+                return ((int)(this["Warodai"]));
+            }
+        }
     }
 }
