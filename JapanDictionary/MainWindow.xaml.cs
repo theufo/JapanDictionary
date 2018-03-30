@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Input;
 using JapanDictionary.Properties;
 
 namespace JapanDictionary
@@ -30,6 +31,12 @@ namespace JapanDictionary
 
         private async void ParseForKanji()
         {
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
+
+            StatusTextBlock.Text = "Parsing for kanji";
+
+            long milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+
             DictionaryResult = new List<TranslateObject>();
 
             var inputText = TextView.InputText.Text + " ";
@@ -78,14 +85,23 @@ namespace JapanDictionary
                 }
             }
 
-            for(int i = 0; i < kanjiList.Count; i++)
+            StatusTextBlock.Text = "Translating kanji";
+
+            for (int i = 0; i < kanjiList.Count; i++)
             {
+                StatusTextBlock.Text = "Trainslating kanji № " + i+1; 
                 DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i+1));
             }
+
+            milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds() - milliseconds;
+
+            StatusTextBlock.Text = "Translate successfull. Elapsed: " + TimeSpan.FromMilliseconds(milliseconds);
 
             TextView.InputText.Text = newText;
 
             DictionaryView.OutPutText.Text = OutputTranslation();
+
+            Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
         }
 
         public string OutputTranslation()
@@ -110,8 +126,15 @@ namespace JapanDictionary
         {
             ApiHelper apiHelper = new ApiHelper();
             var result = new List<TranslateObject>();
-            var link = "http://www.jardic.ru/search/search_r.php?q=" + kanjiItem + "&pg=0&dic_jardic=" + Settings.Default.Jardic + "&dic_warodai=" + Settings.Default.Warodai + " & sw=1920"; //TODO to checkboxes
+            var link = "http://www.jardic.ru/search/search_r.php?q=" + kanjiItem + "&pg=0";
+            if (Settings.Default.Jardic)
+                link += "&dic_jardic=1";
+            if (Settings.Default.Warodai)
+                link += "&dic_warodai=1";
+            link += "&sw = 1920";
+
             Thread.Sleep(100);
+
             try
             {
                 var resultHtml = await apiHelper.GetAsync(link);

@@ -6,6 +6,6 @@
              mc:Ignorable="d" 
              d:DesignHeight="300" d:DesignWidth="300">
     <Grid>
-        <TextBox x:Name="InputText" Text="日産とルノーが合併交渉か 年度 予算" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontSize="16"></TextBox>
+        <TextBox x:Name="InputText" AcceptsReturn="True" AcceptsTab="True" Text="日産とルノーが合併交渉か 年度 予算" TextWrapping="Wrap" HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto" FontSize="16"></TextBox>
     </Grid>
 </UserControl>

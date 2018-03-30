@@ -50,21 +50,27 @@ namespace JapanDictionary.Properties {
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int Jardic {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Jardic {
             get {
-                return ((int)(this["Jardic"]));
+                return ((bool)(this["Jardic"]));
+            }
+            set {
+                this["Jardic"] = value;
             }
         }
         
-        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("1")]
-        public int Warodai {
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool Warodai {
             get {
-                return ((int)(this["Warodai"]));
+                return ((bool)(this["Warodai"]));
+            }
+            set {
+                this["Warodai"] = value;
             }
         }
     }

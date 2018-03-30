@@ -1,21 +1,24 @@
 ﻿<Window x:Class="JapanDictionary.MainWindow"
+        x:Name="ProgramMainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:japandictionary="clr-namespace:JapanDictionary"
+        xmlns:properties="clr-namespace:JapanDictionary.Properties"
         mc:Ignorable="d"
         Title="JapanDictionary" MinHeight="350" MinWidth="525">
-
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
         <StackPanel Orientation="Horizontal">
-        <japandictionary:Buttons x:Name="Buttons" Grid.Row="0"/>
-            <Button x:Name="TranslateButton" Content="Translate" Click="TranslateFile" Margin="20,0,0,0"/>
-
+            <japandictionary:Buttons x:Name="Buttons" Margin="10,0,0,0" />
+            <Button x:Name="TranslateButton" Content="Translate" Click="TranslateFile" Margin="10,0,0,0" />
+            <CheckBox x:Name="JardicCheckBox" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Jardic}" VerticalAlignment="Center" Content="Jardic"  Margin="5,0,0,0" />
+            <CheckBox x:Name="WarodaiCheckBox" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Warodai}" VerticalAlignment="Center" Content="Warodai"  Margin="5,0,0,0" />
+            <TextBlock x:Name="StatusTextBlock" HorizontalAlignment="Right" Margin="20,0,0,0"/>
         </StackPanel>
         <Grid Grid.Row="1">
             <Grid.ColumnDefinitions>
@@ -30,3 +33,4 @@
         </Grid>
     </Grid>
 </Window>
+
