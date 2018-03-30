@@ -9,16 +9,19 @@ namespace JapanDictionary
     public class HtmlParser
     {
         public string HtmlBody;
+        public int translateObjectId;
 
         public List<TranslateObject> TranslateObjects;
 
-        public HtmlParser(string resultHtml)
+        public HtmlParser(string resultHtml, int i)
         {
             var htmlDoc = new HtmlDocument();
             htmlDoc.LoadHtml(resultHtml);
 
             HtmlBody = htmlDoc.GetElementbyId("tabContent").OuterHtml;
             TranslateObjects = new List<TranslateObject>();
+
+            translateObjectId = i;
         }
 
         public bool CheckForAttributes(HtmlNode node)
@@ -45,7 +48,8 @@ namespace JapanDictionary
                     if (node.Id.Contains("pos") || CheckForAttributes(node)) //getting tr tag with pos
                     {
                         var translateObject = new TranslateObject();
-                        //translateObject.id = Int32.Parse(node.Id.Substring(3)); //TODO FIXME
+                        translateObject.id = translateObjectId;
+
                         var translateObjectComparer = new TranslateObjectComparer();
 
                         var isSameKanji = false;

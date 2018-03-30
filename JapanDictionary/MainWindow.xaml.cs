@@ -32,7 +32,9 @@ namespace JapanDictionary
         {
             DictionaryResult = new List<TranslateObject>();
 
-            var charArray = TextView.InputText.Text.ToCharArray();
+            var inputText = TextView.InputText.Text + " ";
+            var charArray = inputText.ToCharArray();
+
             string newText = ""; 
             List<string> kanjiList = new List<string>();
 
@@ -50,33 +52,35 @@ namespace JapanDictionary
 
                 if (i >= kanjiStartValue && i <= kanjiEndValue)
                 {
-                    newText += "(" + kanjiNumber + ") ";
-                    kanjiNumber++;
-                    //if (isPreviousKanji)
-                    //{
-                    //    kanjiList[kanjiList.Count-1] += charItem.ToString();
-                    //}
-                    //else
-                        kanjiList.Add(charItem.ToString());
+                    if (isPreviousKanji)
+                    {
+                        kanjiList[kanjiList.Count - 1] += charItem.ToString();
+                        isPreviousKanji = false;
 
-                    isPreviousKanji = true;
+                        newText += "(" + kanjiNumber + ") ";
+                        kanjiNumber++;
+                    }
+                    else
+                    {
+                        kanjiList.Add(charItem.ToString());
+                        isPreviousKanji = true;
+                    }
+
                 }
                 else
+                {
+                    if (isPreviousKanji)
+                    {
+                        newText += "(" + kanjiNumber + ") ";
+                        kanjiNumber++;
+                    }
                     isPreviousKanji = false;
+                }
             }
 
-            //var output = string.Empty;
-
-            //foreach (var kanji in kanjiList)
-            //{
-            //    output += kanji + "\n";
-            //}
-
-            //DictionaryView.OutPutText.Text = newText;
-
-            foreach (var kanjiItem in kanjiList)
+            for(int i = 0; i < kanjiList.Count; i++)
             {
-                DictionaryResult.AddRange(await GetTranslation(kanjiItem));
+                DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i+1));
             }
 
             TextView.InputText.Text = newText;
@@ -88,14 +92,11 @@ namespace JapanDictionary
         {
             string result = String.Empty;
 
-            int number = 1;
             foreach (var translateObject in DictionaryResult)
             {
-                //TODO result += "(" + translateObject.id + ")" + "\n";
-                result += "-----------------------(" + number + ")-----------------------" + "\n";
-                number++;
+                result += "-----------------------(" + translateObject.id + ")-----------------------" + "\n";
                 result += translateObject.OriginalString + "\n";
-                //result += translateObject.Pronunciation + "\n";
+
                 for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
                 {
                     result += (i + 1) + ") " + translateObject.Translation[i].Key + "\n" + translateObject.Translation[i].Value + "\n";
@@ -105,7 +106,7 @@ namespace JapanDictionary
             return result;
         }
 
-        public async Task<List<TranslateObject>> GetTranslation(string kanjiItem)
+        public async Task<List<TranslateObject>> GetTranslation(string kanjiItem, int i)
         {
             ApiHelper apiHelper = new ApiHelper();
             var result = new List<TranslateObject>();
@@ -115,7 +116,7 @@ namespace JapanDictionary
             {
                 var resultHtml = await apiHelper.GetAsync(link);
 
-                var htmlParser = new HtmlParser(resultHtml);
+                var htmlParser = new HtmlParser(resultHtml, i);
 
                 result = htmlParser.Parse();
             }
