@@ -79,22 +79,47 @@ namespace JapanDictionary
                             {
                                 var spans = node.SelectNodes(node.XPath + "//span"); //getting all <span>'s
 
-                                KeyValuePair<string, string> keyValuePair;
+                                KeyValuePair<List<string>, string> keyValuePair;
 
-                                string pronunciation = string.Empty;
+                                List<string> pronunciation = new List<string>();
                                 string translation = string.Empty;
 
                                 if (spans != null)
                                     foreach (var span in spans) //selecting specific spans based on style color
                                     {
                                         if (span.Attributes[0].Value.ToLower() == "color: #7f0000;") //pronunciation span
-                                            pronunciation = span.InnerText;
-                                        if (span.Attributes[0].Value == "color: #000000;") //translation span
+                                            pronunciation.Add(span.InnerText);
+                                        else
+                                        if (span.Attributes[0].Value.ToLower() == "color: #00007f;") //pronunciation kanji span
+                                        {
+                                            var separator = "<br>";
+                                            List<string> list;
+                                            if (span.InnerHtml.Contains(separator))
+                                            {
+                                                list = span.InnerHtml.Split(new string[] { separator }, StringSplitOptions.None).ToList();
+
+                                                List<string> newList = new List<string>();
+
+                                                foreach (var item in list)
+                                                {
+                                                        HtmlDocument htmlDocument = new HtmlDocument();
+                                                        htmlDocument.LoadHtml(item);
+                                                        newList.Add(htmlDocument.DocumentNode.InnerText);
+
+                                                }
+                                                pronunciation.AddRange(newList);
+                                            }
+                                            else
+                                                pronunciation.Add(span.InnerText);
+                                        }
+                                        else
+                                            if (span.Attributes[0].Value == "color: #000000;") //translation span
                                         {
                                             translation = span.InnerText;
+                                            translation = translation.Replace(";", "\t");
                                         }
                                     }
-                                keyValuePair = new KeyValuePair<string, string>(pronunciation, translation);
+                                keyValuePair = new KeyValuePair<List<string>, string>(pronunciation, translation);
                                 TranslateObjects[num].Translation.Add(keyValuePair);
                             }
                     }

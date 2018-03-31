@@ -1,5 +1,6 @@
 ﻿using Microsoft.Win32;
 using System;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
 using static JapanDictionary.DocReader;
@@ -8,8 +9,9 @@ namespace JapanDictionary
 {
     public partial class Buttons : UserControl
     {
+        public string LoadResult;
+        public string SaveResult;
 
-        public string Result;
         GetWordPlainText getWordPlainText = null;
 
         public Buttons()
@@ -46,12 +48,12 @@ namespace JapanDictionary
             {
                 getWordPlainText = new GetWordPlainText(PathText.Text);
                 this.PathText.Clear();
-                Result = getWordPlainText.ReadWordDocument();
+                LoadResult = getWordPlainText.ReadWordDocument();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
-                Result = String.Empty;
+                LoadResult = String.Empty;
             }
             finally
             {
@@ -62,30 +64,18 @@ namespace JapanDictionary
             }
         }
 
-        /// <summary>
-        ///  Save the text to text file
-        /// </summary>
-        /// <param name="sender"></param>
-        /// <param name="e"></param>
-        //private void btnSaveAs_Click(object sender, EventArgs e)
-        //{
-        //    using (SaveFileDialog savefileDialog = new SaveFileDialog())
-        //    {
-        //        savefileDialog.Filter = "txt document(*.txt)|*.txt";
+        public void SaveFile(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog = new SaveFileDialog();
+            saveFileDialog.FileName = "Dictionary";
+            saveFileDialog.DefaultExt = ".csv";
+            saveFileDialog.Filter = "Csv documents (.csv)|*.csv";
 
-        //        // default file name extension
-        //        savefileDialog.DefaultExt = ".txt";
-
-        //        // Retore the directory before closing
-        //        savefileDialog.RestoreDirectory = true;
-        //        if (savefileDialog.ShowDialog() == DialogResult.OK)
-        //        {
-        //            string filename = savefileDialog.FileName;
-        //            rtbText.SaveFile(filename, RichTextBoxStreamType.PlainText);
-        //            MessageBox.Show("Save Text file successfully, the file path is： " + filename);
-        //        }
-        //    }
-        //}
-
+            if (saveFileDialog.ShowDialog() == true)
+            {
+                File.WriteAllText(saveFileDialog.FileName, SaveResult);
+                MessageBox.Show("Save Text file successfully");
+            }
+        }
     }
 }

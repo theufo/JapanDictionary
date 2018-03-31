@@ -10,10 +10,8 @@ namespace JapanDictionary
     {
     public class GetWordPlainText : IDisposable
         {
-            // Specify whether the instance is disposed.
             private bool disposed = false;
 
-            // The word package
             private WordprocessingDocument package = null;
 
             private string FileName = string.Empty;

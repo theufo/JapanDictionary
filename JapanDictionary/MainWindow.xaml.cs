@@ -11,6 +11,7 @@ namespace JapanDictionary
     public partial class MainWindow
     {
         public List<TranslateObject> DictionaryResult;
+
         public MainWindow()
         {
             InitializeComponent();
@@ -21,8 +22,34 @@ namespace JapanDictionary
 
         private void OnConvertClicked(object sender, RoutedEventArgs e)
         {
-            TextView.InputText.Text = Buttons.Result;
+            TextView.InputText.Text = Buttons.LoadResult;
         }
+
+        private void OnSaveClicked()
+        {
+            string result = "\uFEFF\n";
+
+            foreach (var translateObject in DictionaryResult)
+            {
+                result += translateObject.OriginalString + ";";
+
+                for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
+                {
+                    if (i != 0)
+                        result += "\n ;";
+                    for (int j = 0; j < translateObject.Translation[i].Key.Count; j++)
+                    {
+                        result += translateObject.Translation[i].Key[j];
+                        if (j < translateObject.Translation[i].Key.Count)
+                            result += " / ";
+                    }
+                    result += ";" + translateObject.Translation[i].Value;
+                }
+                result += "\n";
+            }
+            Buttons.SaveResult = result;
+        }
+
 
         private void TranslateFile(object sender, RoutedEventArgs e)
         {
@@ -89,7 +116,8 @@ namespace JapanDictionary
 
             for (int i = 0; i < kanjiList.Count; i++)
             {
-                StatusTextBlock.Text = "Trainslating kanji № " + i+1; 
+                int output = i + 1;
+                StatusTextBlock.Text = "Trainslating kanji № " + output + "\\" + kanjiList.Count; 
                 DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i+1));
             }
 
@@ -101,7 +129,9 @@ namespace JapanDictionary
 
             DictionaryView.OutPutText.Text = OutputTranslation();
 
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Arrow;
+            OnSaveClicked();
+
+            Mouse.OverrideCursor = Cursors.Arrow;
         }
 
         public string OutputTranslation()
@@ -115,7 +145,12 @@ namespace JapanDictionary
 
                 for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
                 {
-                    result += (i + 1) + ") " + translateObject.Translation[i].Key + "\n" + translateObject.Translation[i].Value + "\n";
+                    result += (i + 1) + ") ";
+                    for (int j = 0; j < translateObject.Translation[i].Key.Count; j++)
+                    {
+                        result += translateObject.Translation[i].Key[j] + ";";
+                    }
+                    result += "\n" + translateObject.Translation[i].Value + "\n";
                 }
                 result += "\n";
             }
@@ -149,5 +184,22 @@ namespace JapanDictionary
             }
             return result;
         }
+
+        #region Translations otput box
+        private void NumericOnly(System.Object sender, System.Windows.Input.TextCompositionEventArgs e)
+        {
+            e.Handled = IsTextNumeric(e.Text);
+
+        }
+
+
+        private static bool IsTextNumeric(string str)
+        {
+            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("[^0-9]");
+            return reg.IsMatch(str);
+
+        }
+        #endregion
+
     }
 }

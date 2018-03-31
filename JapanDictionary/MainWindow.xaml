@@ -16,6 +16,8 @@
         <StackPanel Orientation="Horizontal">
             <japandictionary:Buttons x:Name="Buttons" Margin="10,0,0,0" />
             <Button x:Name="TranslateButton" Content="Translate" Click="TranslateFile" Margin="10,0,0,0" />
+            <TextBlock Text="№ of translations:" VerticalAlignment="Center" Margin="10,0,0,0"/>
+            <TextBox x:Name="TranslationsCountBox"  TextAlignment="Right" PreviewTextInput="NumericOnly" Text="{Binding Source={x:Static properties:Settings.Default}, Path=MaxTranslations}" Width="30" VerticalAlignment="Center" Margin="10,0,0,0" />
             <CheckBox x:Name="JardicCheckBox" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Jardic}" VerticalAlignment="Center" Content="Jardic"  Margin="5,0,0,0" />
             <CheckBox x:Name="WarodaiCheckBox" IsChecked="{Binding Source={x:Static properties:Settings.Default}, Path=Warodai}" VerticalAlignment="Center" Content="Warodai"  Margin="5,0,0,0" />
             <TextBlock x:Name="StatusTextBlock" HorizontalAlignment="Right" Margin="20,0,0,0"/>

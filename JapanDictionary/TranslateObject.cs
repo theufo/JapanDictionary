@@ -7,11 +7,11 @@ namespace JapanDictionary
     {
         public int id;
         public string OriginalString;
-        public List<KeyValuePair<string, string>> Translation;
+        public List<KeyValuePair<List<string>, string>> Translation;
 
         public TranslateObject()
         {
-            Translation = new List<KeyValuePair<string, string>>();
+            Translation = new List<KeyValuePair<List<string>, string>>();
         }
     }
 
