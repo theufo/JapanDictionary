@@ -10,16 +10,21 @@ namespace JapanDictionary
 {
     public partial class MainWindow
     {
+        private readonly ApiHelper _apiHelper;
+
         public List<TranslateObject> DictionaryResult;
 
         public MainWindow()
         {
             InitializeComponent();
+
             DictionaryResult = new List<TranslateObject>();
+            _apiHelper = new ApiHelper();
 
             Buttons.ConvertButton.Click += OnConvertClicked;
         }
 
+        #region Button events
         private void OnConvertClicked(object sender, RoutedEventArgs e)
         {
             TextView.InputText.Text = Buttons.LoadResult;
@@ -50,6 +55,7 @@ namespace JapanDictionary
             Buttons.SaveResult = result;
         }
 
+        #endregion
 
         private void TranslateFile(object sender, RoutedEventArgs e)
         {
@@ -69,46 +75,34 @@ namespace JapanDictionary
             var inputText = TextView.InputText.Text + " ";
             var charArray = inputText.ToCharArray();
 
-            string newText = ""; 
             List<string> kanjiList = new List<string>();
 
             int kanjiStartValue = int.Parse(Settings.Default.KanjiStartValue, System.Globalization.NumberStyles.HexNumber);
             int kanjiEndValue = int.Parse(Settings.Default.KanjiEndValue, System.Globalization.NumberStyles.HexNumber);
+            int hiraganaStartValue = int.Parse(Settings.Default.HiraganaStartValue, System.Globalization.NumberStyles.HexNumber);
+            int hiraganaEndValue = int.Parse(Settings.Default.HiraganaEndValue, System.Globalization.NumberStyles.HexNumber);
+            int katakanaStartValue = int.Parse(Settings.Default.KatakanaStartValue, System.Globalization.NumberStyles.HexNumber);
+            int katakanaEndValue = int.Parse(Settings.Default.KatakanaEndValue, System.Globalization.NumberStyles.HexNumber);
 
-            var kanjiNumber = 1;
-
-            bool isPreviousKanji = false;
+            var str = String.Empty;
 
             foreach (var charItem in charArray)
             {
                 var i = (int)charItem;
-                newText += charItem;
 
                 if (i >= kanjiStartValue && i <= kanjiEndValue)
                 {
-                    if (isPreviousKanji)
-                    {
-                        kanjiList[kanjiList.Count - 1] += charItem.ToString();
-                        isPreviousKanji = false;
-
-                        newText += "(" + kanjiNumber + ") ";
-                        kanjiNumber++;
-                    }
-                    else
-                    {
-                        kanjiList.Add(charItem.ToString());
-                        isPreviousKanji = true;
-                    }
-
+                    str += charItem;
                 }
                 else
                 {
-                    if (isPreviousKanji)
+                    if (str != string.Empty)
                     {
-                        newText += "(" + kanjiNumber + ") ";
-                        kanjiNumber++;
+                        if ((i >= hiraganaStartValue && i <= hiraganaEndValue) || (i >= katakanaStartValue && i <= katakanaEndValue))
+                            if (str.Length < 2) str += charItem;
+                        if(!(kanjiList.Contains(str))) kanjiList.Add(str);
+                        str = string.Empty;
                     }
-                    isPreviousKanji = false;
                 }
             }
 
@@ -117,16 +111,14 @@ namespace JapanDictionary
             for (int i = 0; i < kanjiList.Count; i++)
             {
                 int output = i + 1;
-                StatusTextBlock.Text = "Trainslating kanji № " + output + "\\" + kanjiList.Count; 
-                DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i+1));
+                StatusTextBlock.Text = "Trainslating kanji № " + output + "\\" + kanjiList.Count;
+                DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i + 1));
             }
 
             milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds() - milliseconds;
-
             StatusTextBlock.Text = "Translate successfull. Elapsed: " + TimeSpan.FromMilliseconds(milliseconds);
 
-            TextView.InputText.Text = newText;
-
+            //TextView.InputText.Text = newText;
             DictionaryView.OutPutText.Text = OutputTranslation();
 
             OnSaveClicked();
@@ -159,7 +151,6 @@ namespace JapanDictionary
 
         public async Task<List<TranslateObject>> GetTranslation(string kanjiItem, int i)
         {
-            ApiHelper apiHelper = new ApiHelper();
             var result = new List<TranslateObject>();
             var link = "http://www.jardic.ru/search/search_r.php?q=" + kanjiItem + "&pg=0";
             if (Settings.Default.Jardic)
@@ -172,7 +163,7 @@ namespace JapanDictionary
 
             try
             {
-                var resultHtml = await apiHelper.GetAsync(link);
+                var resultHtml = await _apiHelper.GetAsync(link);
 
                 var htmlParser = new HtmlParser(resultHtml, i);
 
@@ -185,20 +176,18 @@ namespace JapanDictionary
             return result;
         }
 
-        #region Translations otput box
+        #region Translations output box
         private void NumericOnly(System.Object sender, System.Windows.Input.TextCompositionEventArgs e)
         {
             e.Handled = IsTextNumeric(e.Text);
-
         }
-
 
         private static bool IsTextNumeric(string str)
         {
             System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("[^0-9]");
             return reg.IsMatch(str);
-
         }
+
         #endregion
 
     }

@@ -6,6 +6,7 @@ using JapanDictionary.Properties;
 
 namespace JapanDictionary
 {
+    //TODO попроавить добавление лишних произношений, добавить проверки на перевод всех частей составного канзи(чтоб все были выделены красным)
     public class HtmlParser
     {
         public string HtmlBody;
@@ -34,8 +35,6 @@ namespace JapanDictionary
 
         public List<TranslateObject> Parse()
         {
-            string result = "";
-
             try
             {
                 var htmlDoc = new HtmlDocument();

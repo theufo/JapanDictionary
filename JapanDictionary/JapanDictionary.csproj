@@ -124,18 +124,18 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="ApiHelper.cs" />
-    <Compile Include="Buttons.xaml.cs">
+    <Compile Include="Controls\Buttons.xaml.cs">
       <DependentUpon>Buttons.xaml</DependentUpon>
     </Compile>
-    <Compile Include="DictionaryView.xaml.cs">
+    <Compile Include="Controls\DictionaryView.xaml.cs">
       <DependentUpon>DictionaryView.xaml</DependentUpon>
     </Compile>
     <Compile Include="HtmlParser.cs" />
-    <Compile Include="TextView.xaml.cs">
+    <Compile Include="Controls\TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
     </Compile>
     <Compile Include="TranslateObject.cs" />
-    <Page Include="DictionaryView.xaml">
+    <Page Include="Controls\DictionaryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -152,11 +152,11 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Buttons.xaml">
+    <Page Include="Controls\Buttons.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="TextView.xaml">
+    <Page Include="Controls\TextView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

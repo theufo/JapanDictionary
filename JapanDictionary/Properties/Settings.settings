@@ -17,5 +17,29 @@
     <Setting Name="Warodai" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="JapaneseStylePunctuationStartValue" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">3000</Value>
+    </Setting>
+    <Setting Name="JapaneseStylePunctuationEndValue" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">303f</Value>
+    </Setting>
+    <Setting Name="HiraganaStartValue" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">3040</Value>
+    </Setting>
+    <Setting Name="HiraganaEndValue" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">309f</Value>
+    </Setting>
+    <Setting Name="KatakanaStartValue" Type="System.String" Scope="Application">
+      <Value Profile="(Default)">30a0</Value>
+    </Setting>
+    <Setting Name="KatakanaEndValue" Type="System.String" Scope="User">
+      <Value Profile="(Default)">30ff</Value>
+    </Setting>
+    <Setting Name="HalfKatakanaStartValue" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ff66</Value>
+    </Setting>
+    <Setting Name="HalfKatakanaEndValue" Type="System.String" Scope="User">
+      <Value Profile="(Default)">ff88</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

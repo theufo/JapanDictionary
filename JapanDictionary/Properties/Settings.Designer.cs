@@ -76,5 +76,86 @@ namespace JapanDictionary.Properties {
                 this["Warodai"] = value;
             }
         }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3000")]
+        public string JapaneseStylePunctuationStartValue {
+            get {
+                return ((string)(this["JapaneseStylePunctuationStartValue"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("303f")]
+        public string JapaneseStylePunctuationEndValue {
+            get {
+                return ((string)(this["JapaneseStylePunctuationEndValue"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("3040")]
+        public string HiraganaStartValue {
+            get {
+                return ((string)(this["HiraganaStartValue"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("309f")]
+        public string HiraganaEndValue {
+            get {
+                return ((string)(this["HiraganaEndValue"]));
+            }
+        }
+        
+        [global::System.Configuration.ApplicationScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30a0")]
+        public string KatakanaStartValue {
+            get {
+                return ((string)(this["KatakanaStartValue"]));
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("30ff")]
+        public string KatakanaEndValue {
+            get {
+                return ((string)(this["KatakanaEndValue"]));
+            }
+            set {
+                this["KatakanaEndValue"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ff66")]
+        public string HalfKatakanaStartValue {
+            get {
+                return ((string)(this["HalfKatakanaStartValue"]));
+            }
+            set {
+                this["HalfKatakanaStartValue"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("ff88")]
+        public string HalfKatakanaEndValue {
+            get {
+                return ((string)(this["HalfKatakanaEndValue"]));
+            }
+            set {
+                this["HalfKatakanaEndValue"] = value;
+            }
+        }
     }
 }
