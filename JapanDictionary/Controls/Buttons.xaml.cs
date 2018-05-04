@@ -1,18 +1,16 @@
-﻿using Microsoft.Win32;
-using System;
+﻿using System;
 using System.IO;
 using System.Windows;
-using System.Windows.Controls;
-using static JapanDictionary.DocReader;
+using Microsoft.Win32;
+using static JapanDictionary.Common.DocReader;
 
 namespace JapanDictionary
 {
-    public partial class Buttons : UserControl
+    public partial class Buttons
     {
+        private GetWordPlainText _getWordPlainText;
         public string LoadResult;
         public string SaveResult;
-
-        GetWordPlainText getWordPlainText = null;
 
         public Buttons()
         {
@@ -27,7 +25,7 @@ namespace JapanDictionary
         private string SelectWordFile()
         {
             string fileName = null;
-            OpenFileDialog dialog = new OpenFileDialog();
+            var dialog = new OpenFileDialog();
             if (dialog.ShowDialog() == true)
             {
                 dialog.Filter = "Word document (*.docx)|*.docx";
@@ -35,10 +33,10 @@ namespace JapanDictionary
 
                 // Retore the directory before closing
                 dialog.RestoreDirectory = true;
-                    fileName = dialog.FileName;
-                    PathText.Text = dialog.FileName;
-                    //rtbText.Clear();
+                fileName = dialog.FileName;
+                PathText.Text = dialog.FileName;
             }
+
             return fileName;
         }
 
@@ -46,30 +44,29 @@ namespace JapanDictionary
         {
             try
             {
-                getWordPlainText = new GetWordPlainText(PathText.Text);
-                this.PathText.Clear();
-                LoadResult = getWordPlainText.ReadWordDocument();
+                _getWordPlainText = new GetWordPlainText(PathText.Text);
+                PathText.Clear();
+                LoadResult = _getWordPlainText.ReadWordDocument();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error");
-                LoadResult = String.Empty;
+                LoadResult = string.Empty;
             }
             finally
             {
-                if (getWordPlainText != null)
-                {
-                    getWordPlainText.Dispose();
-                }
+                _getWordPlainText?.Dispose();
             }
         }
 
         public void SaveFile(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.FileName = "Dictionary";
-            saveFileDialog.DefaultExt = ".csv";
-            saveFileDialog.Filter = "Csv documents (.csv)|*.csv";
+            var saveFileDialog = new SaveFileDialog
+            {
+                FileName = "Dictionary",
+                DefaultExt = ".csv",
+                Filter = "Csv documents (.csv)|*.csv"
+            };
 
             if (saveFileDialog.ShowDialog() == true)
             {

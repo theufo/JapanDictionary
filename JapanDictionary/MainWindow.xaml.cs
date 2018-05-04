@@ -1,9 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Text.RegularExpressions;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
+using JapanDictionary.Common;
 using JapanDictionary.Properties;
 
 namespace JapanDictionary
@@ -11,141 +13,79 @@ namespace JapanDictionary
     public partial class MainWindow
     {
         private readonly ApiHelper _apiHelper;
-
         public List<TranslateObject> DictionaryResult;
 
         public MainWindow()
         {
             InitializeComponent();
+            DataContext = this;
 
             DictionaryResult = new List<TranslateObject>();
             _apiHelper = new ApiHelper();
 
+            StatusService = StatusService.Instance;
+            StatusService.SetReady();
+
             Buttons.ConvertButton.Click += OnConvertClicked;
         }
 
-        #region Button events
-        private void OnConvertClicked(object sender, RoutedEventArgs e)
+        public StatusService StatusService { get; }
+
+        private async void TranslateFile(object sender, RoutedEventArgs e)
         {
-            TextView.InputText.Text = Buttons.LoadResult;
-        }
+            Mouse.OverrideCursor = Cursors.Wait;
 
-        private void OnSaveClicked()
-        {
-            string result = "\uFEFF\n";
+            var kanjiParser = new KanjiParser();
+            var milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+            var kanjiList = kanjiParser.ParseForKanji(TextView.InputText.Text + " ");
 
-            foreach (var translateObject in DictionaryResult)
-            {
-                result += translateObject.OriginalString + ";";
+            DictionaryResult = await MakeDictionary(kanjiList);
 
-                for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
-                {
-                    if (i != 0)
-                        result += "\n ;";
-                    for (int j = 0; j < translateObject.Translation[i].Key.Count; j++)
-                    {
-                        result += translateObject.Translation[i].Key[j];
-                        if (j < translateObject.Translation[i].Key.Count)
-                            result += " / ";
-                    }
-                    result += ";" + translateObject.Translation[i].Value;
-                }
-                result += "\n";
-            }
-            Buttons.SaveResult = result;
-        }
-
-        #endregion
-
-        private void TranslateFile(object sender, RoutedEventArgs e)
-        {
-            ParseForKanji();
-        }
-
-        private async void ParseForKanji()
-        {
-            Mouse.OverrideCursor = System.Windows.Input.Cursors.Wait;
-
-            StatusTextBlock.Text = "Parsing for kanji";
-
-            long milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds();
-
-            DictionaryResult = new List<TranslateObject>();
-
-            var inputText = TextView.InputText.Text + " ";
-            var charArray = inputText.ToCharArray();
-
-            List<string> kanjiList = new List<string>();
-
-            int kanjiStartValue = int.Parse(Settings.Default.KanjiStartValue, System.Globalization.NumberStyles.HexNumber);
-            int kanjiEndValue = int.Parse(Settings.Default.KanjiEndValue, System.Globalization.NumberStyles.HexNumber);
-            int hiraganaStartValue = int.Parse(Settings.Default.HiraganaStartValue, System.Globalization.NumberStyles.HexNumber);
-            int hiraganaEndValue = int.Parse(Settings.Default.HiraganaEndValue, System.Globalization.NumberStyles.HexNumber);
-            int katakanaStartValue = int.Parse(Settings.Default.KatakanaStartValue, System.Globalization.NumberStyles.HexNumber);
-            int katakanaEndValue = int.Parse(Settings.Default.KatakanaEndValue, System.Globalization.NumberStyles.HexNumber);
-
-            var str = String.Empty;
-
-            foreach (var charItem in charArray)
-            {
-                var i = (int)charItem;
-
-                if (i >= kanjiStartValue && i <= kanjiEndValue)
-                {
-                    str += charItem;
-                }
-                else
-                {
-                    if (str != string.Empty)
-                    {
-                        if ((i >= hiraganaStartValue && i <= hiraganaEndValue) || (i >= katakanaStartValue && i <= katakanaEndValue))
-                            if (str.Length < 2) str += charItem;
-                        if(!(kanjiList.Contains(str))) kanjiList.Add(str);
-                        str = string.Empty;
-                    }
-                }
-            }
-
-            StatusTextBlock.Text = "Translating kanji";
-
-            for (int i = 0; i < kanjiList.Count; i++)
-            {
-                int output = i + 1;
-                StatusTextBlock.Text = "Trainslating kanji № " + output + "\\" + kanjiList.Count;
-                DictionaryResult.AddRange(await GetTranslation(kanjiList[i], i + 1));
-            }
-
-            milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds() - milliseconds;
-            StatusTextBlock.Text = "Translate successfull. Elapsed: " + TimeSpan.FromMilliseconds(milliseconds);
-
-            //TextView.InputText.Text = newText;
             DictionaryView.OutPutText.Text = OutputTranslation();
 
-            OnSaveClicked();
+            milliseconds = DateTimeOffset.Now.ToUnixTimeMilliseconds() - milliseconds;
+            StatusService.Text = "Translate successfull. Elapsed: " + TimeSpan.FromMilliseconds(milliseconds);
+
+            OnSaveClicked(); //TODO
 
             Mouse.OverrideCursor = Cursors.Arrow;
         }
 
+        private async Task<List<TranslateObject>> MakeDictionary(List<string> kanjiList)
+        {
+            var dictionaryResult = new List<TranslateObject>();
+
+            StatusService.Text = "Translating kanji";
+
+            for (var i = 0; i < kanjiList.Count; i++)
+            {
+                var output = i + 1;
+                StatusService.Text = "Trainslating kanji № " + output + "\\" + kanjiList.Count;
+                dictionaryResult.AddRange(await GetTranslation(kanjiList[i], i + 1));
+            }
+
+            return dictionaryResult;
+        }
+
         public string OutputTranslation()
         {
-            string result = String.Empty;
+            var result = string.Empty;
 
             foreach (var translateObject in DictionaryResult)
             {
-                result += "-----------------------(" + translateObject.id + ")-----------------------" + "\n";
+                result += "-----------------------(" + translateObject.Id + ")-----------------------" + "\n";
                 result += translateObject.OriginalString + "\n";
 
-                for (int i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
+                for (var i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
                 {
-                    result += (i + 1) + ") ";
-                    for (int j = 0; j < translateObject.Translation[i].Key.Count; j++)
-                    {
-                        result += translateObject.Translation[i].Key[j] + ";";
-                    }
+                    result += i + 1 + ") ";
+                    for (var j = 0; j < translateObject.Translation[i].Key.Count; j++) result += translateObject.Translation[i].Key[j] + ";";
                     result += "\n" + translateObject.Translation[i].Value + "\n";
                 }
+
                 result += "\n";
             }
+
             return result;
         }
 
@@ -159,36 +99,75 @@ namespace JapanDictionary
                 link += "&dic_warodai=1";
             link += "&sw = 1920";
 
-            Thread.Sleep(100);
+            Thread.Sleep(Settings.Default.RequestDelay);
 
             try
             {
                 var resultHtml = await _apiHelper.GetAsync(link);
-
                 var htmlParser = new HtmlParser(resultHtml, i);
 
                 result = htmlParser.Parse();
             }
             catch (Exception e)
             {
+                StatusService.Text = e.Message;
                 DictionaryView.OutPutText.Text = e.Message;
             }
+
             return result;
         }
 
-        #region Translations output box
-        private void NumericOnly(System.Object sender, System.Windows.Input.TextCompositionEventArgs e)
+        #region Button events
+
+        private void OnConvertClicked(object sender, RoutedEventArgs e)
+        {
+            TextView.InputText.Text = Buttons.LoadResult;
+        }
+
+        private void OnSaveClicked()
+        {
+            var result = "\uFEFF\n";
+
+            foreach (var translateObject in DictionaryResult)
+            {
+                result += translateObject.OriginalString + ";";
+
+                for (var i = 0; i < translateObject.Translation.Count && i < Settings.Default.MaxTranslations; i++)
+                {
+                    if (i != 0)
+                        result += "\n ;";
+                    for (var j = 0; j < translateObject.Translation[i].Key.Count; j++)
+                    {
+                        result += translateObject.Translation[i].Key[j];
+                        if (j < translateObject.Translation[i].Key.Count)
+                            result += " / ";
+                    }
+
+                    result += ";" + translateObject.Translation[i].Value;
+                }
+
+                result += "\n";
+            }
+
+            Buttons.SaveResult = result;
+        }
+
+        #endregion
+
+        #region Translations output box 
+
+        //TODO move to settings control
+        private void NumericOnly(object sender, TextCompositionEventArgs e)
         {
             e.Handled = IsTextNumeric(e.Text);
         }
 
         private static bool IsTextNumeric(string str)
         {
-            System.Text.RegularExpressions.Regex reg = new System.Text.RegularExpressions.Regex("[^0-9]");
+            var reg = new Regex("[^0-9]");
             return reg.IsMatch(str);
         }
 
         #endregion
-
     }
 }

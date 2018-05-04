@@ -1,16 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using HtmlAgilityPack;
 using System.Linq;
+using HtmlAgilityPack;
 using JapanDictionary.Properties;
 
-namespace JapanDictionary
+namespace JapanDictionary.Common
 {
     //TODO попроавить добавление лишних произношений, добавить проверки на перевод всех частей составного канзи(чтоб все были выделены красным)
     public class HtmlParser
     {
         public string HtmlBody;
         public int translateObjectId;
+
+        public StatusService StatusService { get; }
 
         public List<TranslateObject> TranslateObjects;
 
@@ -21,6 +23,7 @@ namespace JapanDictionary
 
             HtmlBody = htmlDoc.GetElementbyId("tabContent").OuterHtml;
             TranslateObjects = new List<TranslateObject>();
+            StatusService = StatusService.Instance;
 
             translateObjectId = i;
         }
@@ -46,8 +49,7 @@ namespace JapanDictionary
                 {
                     if (node.Id.Contains("pos") || CheckForAttributes(node)) //getting tr tag with pos
                     {
-                        var translateObject = new TranslateObject();
-                        translateObject.id = translateObjectId;
+                        var translateObject = new TranslateObject {Id = translateObjectId};
 
                         var translateObjectComparer = new TranslateObjectComparer();
 
@@ -55,7 +57,7 @@ namespace JapanDictionary
 
                         if (TranslateObjects.Contains(translateObject, translateObjectComparer))
                         {
-                            translateObject = TranslateObjects.First(x => x.id == translateObject.id);
+                            translateObject = TranslateObjects.First(x => x.Id == translateObject.Id);
                             isSameKanji = true;
                         }
 

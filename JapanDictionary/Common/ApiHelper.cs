@@ -4,9 +4,9 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
-namespace JapanDictionary
+namespace JapanDictionary.Common
 {
-    class ApiHelper
+    public class ApiHelper
     {
         private readonly HttpClient _httpClient;
 
@@ -20,21 +20,18 @@ namespace JapanDictionary
             _httpClient.DefaultRequestHeaders.Clear();
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("text/html"));
             _httpClient.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("*/*"));
-
             _httpClient.Timeout = TimeSpan.FromSeconds(300);
         }
 
-        public async Task<String> GetAsync(string url)
+        public async Task<string> GetAsync(string url)
         {
             var httpRequestMessage = new HttpRequestMessage(HttpMethod.Get, url);
             var response = await _httpClient.SendAsync(httpRequestMessage);
-            if (response.IsSuccessStatusCode)
-            {
-                var result = await response.Content.ReadAsStringAsync();
+            if (!response.IsSuccessStatusCode)
+                return string.Empty;
 
-                return result;
-            }
-            return String.Empty;
+            var result = await response.Content.ReadAsStringAsync();
+            return result;
         }
     }
 }

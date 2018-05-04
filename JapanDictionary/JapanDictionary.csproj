@@ -123,18 +123,20 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ApiHelper.cs" />
+    <Compile Include="Common\ApiHelper.cs" />
+    <Compile Include="Common\KanjiParser.cs" />
+    <Compile Include="Common\StatusService.cs" />
     <Compile Include="Controls\Buttons.xaml.cs">
       <DependentUpon>Buttons.xaml</DependentUpon>
     </Compile>
     <Compile Include="Controls\DictionaryView.xaml.cs">
       <DependentUpon>DictionaryView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="HtmlParser.cs" />
+    <Compile Include="Common\HtmlParser.cs" />
     <Compile Include="Controls\TextView.xaml.cs">
       <DependentUpon>TextView.xaml</DependentUpon>
     </Compile>
-    <Compile Include="TranslateObject.cs" />
+    <Compile Include="Common\TranslateObject.cs" />
     <Page Include="Controls\DictionaryView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -147,7 +149,7 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DocReader.cs" />
+    <Compile Include="Common\DocReader.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -162,6 +164,7 @@
     </Page>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Properties\Annotations.cs" />
     <Compile Include="Properties\AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>

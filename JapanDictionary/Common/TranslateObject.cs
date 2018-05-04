@@ -1,11 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 
-namespace JapanDictionary
+namespace JapanDictionary.Common
 {
     public class TranslateObject
     {
-        public int id;
+        public int Id;
         public string OriginalString;
         public List<KeyValuePair<List<string>, string>> Translation;
 
@@ -19,20 +18,14 @@ namespace JapanDictionary
     {
         public bool Equals(TranslateObject x, TranslateObject y)
         {
-            if (x.id == null || y.id == null)
-                return false;
-
-            return x.id == y.id;
+            return y != null && x != null && x.Id == y.Id;
         }
 
         public int GetHashCode(TranslateObject obj)
         {
-            if (Object.ReferenceEquals(obj, null)) return 0;
-
-            int hashOriginalString = obj.OriginalString == null ? 0 : obj.OriginalString.GetHashCode();
+            var hashOriginalString = obj.OriginalString == null ? 0 : obj.OriginalString.GetHashCode();
 
             return hashOriginalString;
         }
     }
-
 }
